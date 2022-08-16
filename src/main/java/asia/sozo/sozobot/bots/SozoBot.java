@@ -63,205 +63,213 @@ public class SozoBot extends TelegramLongPollingBot {
 
     @SneakyThrows
     @Override
-    public void onUpdateReceived(Update update) {
+    public  synchronized void onUpdateReceived(Update update) {
+
+        new Thread(() -> {
 
 
-        UserSaveResponse response = userService.save(update);
-        TgUser tgUser = response.getUser();
+            UserSaveResponse response = userService.save(update);
+            TgUser tgUser = response.getUser();
 
 
-        if (update.hasMessage()) {
+            if (update.hasMessage()) {
 
-            Message message = update.getMessage();
-            System.out.println(message.getFrom().getId());
+                Message message = update.getMessage();
+                System.out.println(message.getFrom().getId());
 
-            if (message.isCommand()) {
-                String command = message.getText().split(" ")[0];
+                if (message.isCommand()) {
+                    String command = message.getText().split(" ")[0];
 
-                switch (command) {
-                    case _START_COMMAND: {
-                        deleteKeyboardButtonAndSend("Assaslomu alaykum, SOZO botga xush kelibsiz!", tgUser.getChatIdString());
-                        initCommands(tgUser.getChatIdString());
-                        doStart(tgUser);
-                        tgUser.setState(HOME);
-                        break;
+                    switch (command) {
+                        case _START_COMMAND: {
+                            deleteKeyboardButtonAndSend("Assaslomu alaykum, SOZO botga xush kelibsiz!", tgUser.getChatIdString());
+                            try {
+                                initCommands(tgUser.getChatIdString());
+                            } catch (TelegramApiException e) {
+                                e.printStackTrace();
+                            }
+                            doStart(tgUser);
+                            tgUser.setState(HOME);
+                            break;
+                        }
+                        case _TIMETABLE: {
+                            sendTimeTable(tgUser.getChatIdString());
+                            break;
+                        }
+                        case _LOCATION: {
+                            sendLocation(tgUser.getChatIdString(), tgUser.getState().equals(HOME));
+                            break;
+                        }
+                        case _MASTER_CLASS: {
+                            tgUser.setState(MASTER_CLASS);
+                            sendMasterClass(tgUser.getChatIdString());
+                            break;
+                        }
+                        case _MERCH: {
+
+                            tgUser.setState(MERCH);
+                            sendMerch(tgUser.getChatIdString());
+                            break;
+                        }
+                        case _SOZO_INFO: {
+                            sendInfo(tgUser.getChatIdString());
+                            break;
+                        }
                     }
-                    case _TIMETABLE: {
-                        sendTimeTable(tgUser.getChatIdString());
-                        break;
-                    }
-                    case _LOCATION: {
-                        sendLocation(tgUser.getChatIdString(), tgUser.getState().equals(HOME));
-                        break;
-                    }
-                    case _MASTER_CLASS: {
-                        tgUser.setState(MASTER_CLASS);
-                        sendMasterClass(tgUser.getChatIdString());
-                        break;
-                    }
-                    case _MERCH: {
 
-                        tgUser.setState(MERCH);
-                        sendMerch(tgUser.getChatIdString());
-                        break;
+                } else if (message.hasText()) {
+
+                    String text = message.getText();
+
+                    System.out.println(text + " -> " + tgUser.getState());
+
+                    switch (tgUser.getState()) {
+                        case MASTER_CLASS: {
+                            switch (text) {
+                                case "\uD83C\uDFE0 Дамой": {
+                                    tgUser.setState(HOME);
+                                    doStart(tgUser);
+                                    break;
+                                }
+                                case "Отнашение до брака": {
+
+                                    String mass = "КОНФЕРЕНЦИЯ В САМОМ РАЗГАРЕ\uD83D\uDD25\n" +
+                                            "#пятьстранодносердце \n" +
+                                            "\n" +
+                                            "Если ты по какой-то причине не смог присуствовать на SOZO, мы подготовили для тебя прямой эфир! \uD83D\uDE4C\uD83C\uDFFB \n" +
+                                            "\n" +
+                                            "Вот ссылка: https://youtu.be/8s-NcxbABV8\n" +
+                                            "\n" +
+                                            "#sozo";
+                                    sendMessage(mass, tgUser.getChatIdString());
+
+                                    break;
+                                }
+
+                                case "О кофе": {
+                                    String mass = "КОНФЕРЕНЦИЯ В САМОМ РАЗГАРЕ\uD83D\uDD25\n" +
+                                            "#пятьстранодносердце \n" +
+                                            "\n" +
+                                            "Если ты по какой-то причине не смог присуствовать на SOZO, мы подготовили для тебя прямой эфир! \uD83D\uDE4C\uD83C\uDFFB \n" +
+                                            "\n" +
+                                            "Вот ссылка: https://youtu.be/8s-NcxbABV8\n" +
+                                            "\n" +
+                                            "# sozo";
+                                    sendMessage(mass, tgUser.getChatIdString());
+                                    break;
+                                }
+                                case "Медиа и SMM": {
+                                    String mass = "КОНФЕРЕНЦИЯ В САМОМ РАЗГАРЕ\uD83D\uDD25\n" +
+                                            "#пятьстранодносердце \n" +
+                                            "\n" +
+                                            "Если ты по какой-то причине не смог присуствовать на SOZO, мы подготовили для тебя прямой эфир! \uD83D\uDE4C\uD83C\uDFFB \n" +
+                                            "\n" +
+                                            "Вот ссылка: https://youtu.be/8s-NcxbABV8\n" +
+                                            "\n" +
+                                            "#sozo ";
+                                    sendMessage(mass, tgUser.getChatIdString());
+                                    break;
+                                }
+                                case "Молодежная миссия": {
+                                    String mass = "КОНФЕРЕНЦИЯ В САМОМ РАЗГАРЕ\uD83D\uDD25\n" +
+                                            "#пятьстранодносердце \n" +
+                                            "\n" +
+                                            "Если ты по какой-то причине не смог присуствовать на SOZO, мы подготовили для тебя прямой эфир! \uD83D\uDE4C\uD83C\uDFFB \n" +
+                                            "\n" +
+                                            "Вот ссылка: https://youtu.be/8s-NcxbABV8\n" +
+                                            "\n" +
+                                            "#soz o";
+                                    sendMessage(mass, tgUser.getChatIdString());
+                                    break;
+                                }
+                            }
+                            break;
+                        }
+                        case MERCH: {
+                            switch (text) {
+                                case "\uD83C\uDFE0 Дамой": {
+                                    tgUser.setState(HOME);
+                                    doStart(tgUser);
+                                    break;
+                                }
+
+                                case "Xudi": {
+                                    sendMerch(tgUser);
+                                    break;
+                                }
+                                case "Fudbolka": {
+                                    sendMerch(tgUser);
+
+                                    break;
+                                }
+                                case "Naski": {
+                                    sendMerch(tgUser);
+
+                                    break;
+                                }
+                                case "Kepka": {
+                                    sendMerch(tgUser);
+
+                                    break;
+                                }
+                            }
+                            break;
+                        }
+                        case HOME: {
+                            switch (text) {
+                                case "\uD83D\uDCC5 Jadval": {
+                                    sendTimeTable(tgUser.getChatIdString());
+                                    break;
+                                }
+                                case "\uD83D\uDCCD Location": {
+                                    sendLocation(tgUser.getChatIdString(), tgUser.isState(HOME));
+                                    break;
+                                }
+                                case "\uD83C\uDFBD Merch": {
+                                    tgUser.setState(MERCH);
+                                    sendMerch(tgUser.getChatIdString());
+                                    break;
+                                }
+                                case "\uD83D\uDC68\u200D\uD83C\uDFEB Master class": {
+                                    tgUser.setState(MASTER_CLASS);
+                                    sendMasterClass(tgUser.getChatIdString());
+                                    break;
+                                }
+                                case "❓ What is SOZO ❓": {
+                                    sendInfo(tgUser.getChatIdString());
+                                    break;
+                                }
+                            }
+                        }
                     }
-                    case _SOZO_INFO: {
-                        sendInfo(tgUser.getChatIdString());
-                        break;
-                    }
+
+
+                } else if (message.hasContact()) {
+
                 }
 
-            } else if (message.hasText()) {
+            } else if (update.hasCallbackQuery()) {
 
-                String text = message.getText();
-
-                System.out.println(text + " -> " + tgUser.getState());
-
+                String id = update.getCallbackQuery().getData();
+                System.out.println(id);
                 switch (tgUser.getState()) {
-                    case MASTER_CLASS: {
-                        switch (text) {
-                            case "\uD83C\uDFE0 Дамой": {
-                                tgUser.setState(HOME);
-                                doStart(tgUser);
-                                break;
-                            }
-                            case "Отнашение до брака": {
-
-                                String mass = "КОНФЕРЕНЦИЯ В САМОМ РАЗГАРЕ\uD83D\uDD25\n" +
-                                        "#пятьстранодносердце \n" +
-                                        "\n" +
-                                        "Если ты по какой-то причине не смог присуствовать на SOZO, мы подготовили для тебя прямой эфир! \uD83D\uDE4C\uD83C\uDFFB \n" +
-                                        "\n" +
-                                        "Вот ссылка: https://youtu.be/8s-NcxbABV8\n" +
-                                        "\n" +
-                                        "#sozo";
-                                sendMessage(mass, tgUser.getChatIdString());
-
-                                break;
-                            }
-
-                            case "О кофе": {
-                                String mass = "КОНФЕРЕНЦИЯ В САМОМ РАЗГАРЕ\uD83D\uDD25\n" +
-                                        "#пятьстранодносердце \n" +
-                                        "\n" +
-                                        "Если ты по какой-то причине не смог присуствовать на SOZO, мы подготовили для тебя прямой эфир! \uD83D\uDE4C\uD83C\uDFFB \n" +
-                                        "\n" +
-                                        "Вот ссылка: https://youtu.be/8s-NcxbABV8\n" +
-                                        "\n" +
-                                        "# sozo";
-                                sendMessage(mass, tgUser.getChatIdString());
-                                break;
-                            }
-                            case "Медиа и SMM": {
-                                String mass = "КОНФЕРЕНЦИЯ В САМОМ РАЗГАРЕ\uD83D\uDD25\n" +
-                                        "#пятьстранодносердце \n" +
-                                        "\n" +
-                                        "Если ты по какой-то причине не смог присуствовать на SOZO, мы подготовили для тебя прямой эфир! \uD83D\uDE4C\uD83C\uDFFB \n" +
-                                        "\n" +
-                                        "Вот ссылка: https://youtu.be/8s-NcxbABV8\n" +
-                                        "\n" +
-                                        "#sozo ";
-                                sendMessage(mass, tgUser.getChatIdString());
-                                break;
-                            }
-                            case "Молодежная миссия": {
-                                String mass = "КОНФЕРЕНЦИЯ В САМОМ РАЗГАРЕ\uD83D\uDD25\n" +
-                                        "#пятьстранодносердце \n" +
-                                        "\n" +
-                                        "Если ты по какой-то причине не смог присуствовать на SOZO, мы подготовили для тебя прямой эфир! \uD83D\uDE4C\uD83C\uDFFB \n" +
-                                        "\n" +
-                                        "Вот ссылка: https://youtu.be/8s-NcxbABV8\n" +
-                                        "\n" +
-                                        "#soz o";
-                                sendMessage(mass, tgUser.getChatIdString());
-                                break;
-                            }
-                        }
+                    case LANG: {
+                        tgUser.setLang(id);
                         break;
                     }
-                    case MERCH: {
-                        switch (text) {
-                            case "\uD83C\uDFE0 Дамой": {
-                                tgUser.setState(HOME);
-                                doStart(tgUser);
-                                break;
-                            }
-
-                            case "Xudi": {
-                                sendMerch(tgUser);
-                                break;
-                            }
-                            case "Fudbolka": {
-                                sendMerch(tgUser);
-
-                                break;
-                            }
-                            case "Naski": {
-                                sendMerch(tgUser);
-
-                                break;
-                            }
-                            case "Kepka": {
-                                sendMerch(tgUser);
-
-                                break;
-                            }
-                        }
-                        break;
-                    }
-                    case HOME: {
-                        switch (text) {
-                            case "\uD83D\uDCC5 Jadval": {
-                                sendTimeTable(tgUser.getChatIdString());
-                                break;
-                            }
-                            case "\uD83D\uDCCD Location": {
-                                sendLocation(tgUser.getChatIdString(), tgUser.isState(HOME));
-                                break;
-                            }
-                            case "\uD83C\uDFBD Merch": {
-                                tgUser.setState(MERCH);
-                                sendMerch(tgUser.getChatIdString());
-                                break;
-                            }
-                            case "\uD83D\uDC68\u200D\uD83C\uDFEB Master class": {
-                                tgUser.setState(MASTER_CLASS);
-                                sendMasterClass(tgUser.getChatIdString());
-                                break;
-                            }
-                            case "❓ What is SOZO ❓": {
-                                sendInfo(tgUser.getChatIdString());
-                                break;
-                            }
-                        }
-                    }
-                }
-
-
-            } else if (message.hasContact()) {
-
-            }
-
-        } else if (update.hasCallbackQuery()) {
-
-            String id = update.getCallbackQuery().getData();
-            System.out.println(id);
-            switch (tgUser.getState()) {
-                case LANG: {
-                    tgUser.setLang(id);
-                    break;
-                }
 //                case :
+                }
+
             }
 
-        }
+            userService.save(tgUser);
 
-        userService.save(tgUser);
+        }).start();
 
     }
 
-    private void sendMerch(TgUser tgUser) {
-        InputFile file = new InputFile(new File("D:\\Java projects\\telegram_bots\\SozoBot\\src\\main\\resources\\imgs\\photo_2022-08-17_00-05-52.jpg"));
+    private synchronized  void sendMerch(TgUser tgUser) {
+        InputFile file = new InputFile(new File("imgs/photo_2022-08-17_00-05-52.jpg"));
 //        InputFile file = new InputFile("AgACAgIAAxkDAAIB-WL8E-Xg6lWEHS3c4RUym1JT3Bm9AAI7xDEbYefhSxfsZg8aBsYiAQADAgADcwADKQQ.jpg");
 
 
@@ -294,7 +302,7 @@ public class SozoBot extends TelegramLongPollingBot {
 //    PhotoSize(fileId=AgACAgIAAxkDAAIB-WL8E-Xg6lWEHS3c4RUym1JT3Bm9AAI7xDEbYefhSxfsZg8aBsYiAQADAgADeQADKQQ, fileUniqueId=AQADO8QxG2Hn4Ut-, width=1280, height=364, fileSize=57112, filePath=null)]
 
 
-    private void doStart(TgUser tgUser) {
+    private  synchronized void doStart(TgUser tgUser) {
 
 
       /*
@@ -331,19 +339,16 @@ public class SozoBot extends TelegramLongPollingBot {
 //        tgUser.setState(LANG);
     }
 
-    private void mainMenu() {
 
 
-    }
-
-    private Map<String, String> newMap(String key, String value) {
+    private synchronized  Map<String, String> newMap(String key, String value) {
         Map<String, String> map = new HashMap<String, String>(1);
         map.put(key, value);
         return map;
     }
 
 
-    private void deleteKeyboardButtonAndSend(String text, String chatId) {
+    private synchronized  void deleteKeyboardButtonAndSend(String text, String chatId) {
 
         ReplyKeyboardRemove remove = new ReplyKeyboardRemove(true);
         SendMessage sendMessage = new SendMessage(chatId, text);
@@ -353,7 +358,7 @@ public class SozoBot extends TelegramLongPollingBot {
 
     }
 
-    private void sendInfo(String chatId) {
+    private synchronized  void sendInfo(String chatId) {
         String message = "SOZO - масштабная молодежная христианская конференция Центральной Азии\n" +
                 "\n" +
                 "\uD83D\uDDD3 | 16-19 августа\n" +
@@ -371,7 +376,7 @@ public class SozoBot extends TelegramLongPollingBot {
         sendMessage(message, chatId);
     }
 
-    private void sendMasterClass(String chatId) {
+    private  synchronized void sendMasterClass(String chatId) {
 
         List<List<String>> list = new ArrayList<>(5);
         list.add(Arrays.asList("Отнашение до брака", "О кофе"));
@@ -386,7 +391,7 @@ public class SozoBot extends TelegramLongPollingBot {
     }
 
 
-    private void sendMerch(String chatId) {
+    private synchronized  void sendMerch(String chatId) {
 
         List<List<String>> list = new ArrayList<>(5);
         list.add(Arrays.asList("Xudi", "Fudbolka"));
@@ -400,13 +405,13 @@ public class SozoBot extends TelegramLongPollingBot {
 
     }
 
-    private void sendReplayMarkup(String text, ReplyKeyboardMarkup markup, String chatId) {
+    private synchronized void sendReplayMarkup(String text, ReplyKeyboardMarkup markup, String chatId) {
         SendMessage message = new SendMessage(chatId, text);
         message.setReplyMarkup(markup);
         sendMessage(message);
     }
 
-    private void sendTimeTable(String chatId) {
+    private  synchronized void sendTimeTable(String chatId) {
         String message = "12 ДНЕЙ ДО КОНФЕРЕНЦИИ SOZO \uD83D\uDCA5\n" +
                 "\n" +
                 "Старший пастор церкви «Almaty Church» - Иван Крюков, приглашает лично тебя стать частью того, что Бог делает здесь в Центральной Азии! \n" +
@@ -424,7 +429,7 @@ public class SozoBot extends TelegramLongPollingBot {
     }
 
 
-    private Message sendMessage(String text, String chatId) {
+    private synchronized  Message sendMessage(String text, String chatId) {
         try {
             SendMessage message = new SendMessage(chatId, text);
             message.enableHtml(true);
@@ -436,7 +441,7 @@ public class SozoBot extends TelegramLongPollingBot {
     }
 
 
-    private Message sendMessage(SendPhoto photo, String chatId) {
+    private  synchronized Message sendMessage(SendPhoto photo, String chatId) {
         try {
             return execute(photo);
         } catch (TelegramApiException e) {
@@ -445,7 +450,7 @@ public class SozoBot extends TelegramLongPollingBot {
         }
     }
 
-    private Message sendMessage(SendMessage message) {
+    private synchronized  Message sendMessage(SendMessage message) {
         try {
             return execute(message);
         } catch (TelegramApiException e) {
@@ -455,7 +460,7 @@ public class SozoBot extends TelegramLongPollingBot {
     }
 
 
-    private Message sendLocation(String chatId, boolean isHome) {
+    private synchronized  Message sendLocation(String chatId, boolean isHome) {
         try {
 
             List<List<Map<String, String>>> maps = new ArrayList<>();
@@ -492,7 +497,7 @@ public class SozoBot extends TelegramLongPollingBot {
     }
 
 
-    private void sendEditMessage(EditMessageText message) {
+    private synchronized  void sendEditMessage(EditMessageText message) {
         try {
             execute(message);
         } catch (TelegramApiException e) {
@@ -501,7 +506,7 @@ public class SozoBot extends TelegramLongPollingBot {
     }
 
 
-    private boolean deleteMessage(DeleteMessage message) {
+    private  synchronized boolean deleteMessage(DeleteMessage message) {
         try {
             return execute(message);
         } catch (TelegramApiException e) {
@@ -511,7 +516,7 @@ public class SozoBot extends TelegramLongPollingBot {
     }
 
 
-    private boolean deleteMessage(String chatId, Message message) {
+    private synchronized  boolean deleteMessage(String chatId, Message message) {
         try {
             DeleteMessage deleteMessage = new DeleteMessage(chatId, message.getMessageId());
             return execute(deleteMessage);
@@ -522,7 +527,7 @@ public class SozoBot extends TelegramLongPollingBot {
     }
 
 
-    private void initCommands(String chatId) throws TelegramApiException {
+    private synchronized  void initCommands(String chatId) throws TelegramApiException {
         botCommands = (List<BotCommand>) Arrays.asList(
                 new BotCommand(_START_COMMAND, "Restart bot"),
                 new BotCommand(_TIMETABLE, "Jadval"),
@@ -537,7 +542,7 @@ public class SozoBot extends TelegramLongPollingBot {
     }
 
 
-    private boolean validateContact(String phone) {
+    private synchronized boolean validateContact(String phone) {
         Pattern pattern = Pattern.compile("^(\\+|)998(9[0-9]|6[125679]|7[125679]|8[8]|3[3])[0-9]{7}$");
         return pattern.matcher(phone).matches();
     }
