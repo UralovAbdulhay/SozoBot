@@ -34,7 +34,7 @@ public class UserService {
 
         TgUser user = new TgUser();
 
-        Optional<TgUser> byId = userRepository.findById(chatUser.getId());
+        Optional<TgUser> byId = userRepository.findById(Long.valueOf(chatUser.getId()));
 
         if (byId.isPresent()) {
             userSaveResponse.setUser(byId.get());

@@ -1,17 +1,12 @@
 package asia.sozo.sozobot.bots;
 
 import lombok.SneakyThrows;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
-import org.telegram.telegrambots.meta.api.methods.commands.SetMyCommands;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
-import org.telegram.telegrambots.meta.api.objects.commands.BotCommand;
-import org.telegram.telegrambots.meta.api.objects.commands.scope.BotCommandScopeChat;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.util.Arrays;
@@ -24,10 +19,10 @@ import static asia.sozo.sozobot.utils.UserUtils.*;
 //@Component
 public class SozoAdminBot extends TelegramLongPollingBot {
 
-    @Value("${telegram.bot.admin.token}")
+    //    @Value("${telegram.bot.admin.token}")
     private String token;
 
-    @Value("${telegram.bot.admin.username}")
+    //    @Value("${telegram.bot.admin.username}")
     private String botUserName;
 
     @Override
@@ -41,7 +36,7 @@ public class SozoAdminBot extends TelegramLongPollingBot {
     }
 
 
-    private List<BotCommand> botCommands;
+//    private List<BotCommand> botCommands;
 
 
     @SneakyThrows
@@ -102,6 +97,7 @@ public class SozoAdminBot extends TelegramLongPollingBot {
         }
     }
 
+/*
 
     private void initCommands(String chatId) throws TelegramApiException {
         botCommands = (List<BotCommand>) Arrays.asList(
@@ -116,6 +112,7 @@ public class SozoAdminBot extends TelegramLongPollingBot {
         BotCommandScopeChat scopeChat = new BotCommandScopeChat(chatId);
         execute(new SetMyCommands(botCommands, scopeChat, "ru"));
     }
+*/
 
 
     private boolean validateContact(String phone) {

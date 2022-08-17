@@ -9,7 +9,6 @@ import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
-import org.telegram.telegrambots.meta.api.methods.commands.SetMyCommands;
 import org.telegram.telegrambots.meta.api.methods.send.SendLocation;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
@@ -18,15 +17,12 @@ import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageTe
 import org.telegram.telegrambots.meta.api.objects.InputFile;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
-import org.telegram.telegrambots.meta.api.objects.commands.BotCommand;
-import org.telegram.telegrambots.meta.api.objects.commands.scope.BotCommandScopeChat;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardRemove;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
-import java.io.File;
 import java.util.*;
 import java.util.regex.Pattern;
 
@@ -41,11 +37,12 @@ public class SozoBot extends TelegramLongPollingBot {
     private final ButtonService buttonService;
 
 
-    @Value("${telegram.bot.admin.token}")
+    @Value("${telegram.bot.publicBot.token}")
     private String token;
 
-    @Value("${telegram.bot.admin.username}")
+    @Value("${telegram.bot.publicBot.username}")
     private String botUserName;
+
 
     @Override
     public String getBotUsername() {
@@ -58,12 +55,12 @@ public class SozoBot extends TelegramLongPollingBot {
     }
 
 
-    private List<BotCommand> botCommands;
+//    private List<BotCommand> botCommands;
 
 
     @SneakyThrows
     @Override
-    public  synchronized void onUpdateReceived(Update update) {
+    public synchronized void onUpdateReceived(Update update) {
 
         new Thread(() -> {
 
@@ -83,11 +80,11 @@ public class SozoBot extends TelegramLongPollingBot {
                     switch (command) {
                         case _START_COMMAND: {
                             deleteKeyboardButtonAndSend("Assaslomu alaykum, SOZO botga xush kelibsiz!", tgUser.getChatIdString());
-                            try {
-                                initCommands(tgUser.getChatIdString());
-                            } catch (TelegramApiException e) {
-                                e.printStackTrace();
-                            }
+//                            try {
+//                                initCommands(tgUser.getChatIdString());
+//                            } catch (TelegramApiException e) {
+//                                e.printStackTrace();
+//                            }
                             doStart(tgUser);
                             tgUser.setState(HOME);
                             break;
@@ -268,14 +265,16 @@ public class SozoBot extends TelegramLongPollingBot {
 
     }
 
-    private synchronized  void sendMerch(TgUser tgUser) {
-        InputFile file = new InputFile(new File("imgs/photo_2022-08-17_00-05-52.jpg"));
+    private synchronized void sendMerch(TgUser tgUser) {
 //        InputFile file = new InputFile("AgACAgIAAxkDAAIB-WL8E-Xg6lWEHS3c4RUym1JT3Bm9AAI7xDEbYefhSxfsZg8aBsYiAQADAgADcwADKQQ.jpg");
 
 
-        SendPhoto photo = new SendPhoto();
-        photo.setChatId(tgUser.getChatIdString());
-        photo.setPhoto(file);
+//        InputMediaPhoto mediaPhoto = new InputMediaPhoto();
+//        mediaPhoto.setMedia("AgACAgIAAxkDAAIB-WL8E-Xg6lWEHS3c4RUym1JT3Bm9AAI7xDEbYefhSxfsZg8aBsYiAQADAgADcwADKQQ");
+        InputFile file = new InputFile("https://drive.google.com/file/d/1Ev4LhN3Jqf5WTT_Pasi0vZZGVVMMu3PZ/view?usp=sharing");
+
+        SendPhoto photo = new SendPhoto(tgUser.getChatIdString(), file);
+
 
         photo.setCaption("М Е Р Ч\n" +
                 "\n" +
@@ -292,7 +291,7 @@ public class SozoBot extends TelegramLongPollingBot {
                 "#⃣| #sozoconf\n" +
                 "\n" +
                 "#sozoconf #centralasia #soon #скоро");
-        System.out.println(sendMessage(photo, tgUser.getChatIdString()));
+
     }
 
 
@@ -302,7 +301,7 @@ public class SozoBot extends TelegramLongPollingBot {
 //    PhotoSize(fileId=AgACAgIAAxkDAAIB-WL8E-Xg6lWEHS3c4RUym1JT3Bm9AAI7xDEbYefhSxfsZg8aBsYiAQADAgADeQADKQQ, fileUniqueId=AQADO8QxG2Hn4Ut-, width=1280, height=364, fileSize=57112, filePath=null)]
 
 
-    private  synchronized void doStart(TgUser tgUser) {
+    private synchronized void doStart(TgUser tgUser) {
 
 
       /*
@@ -340,25 +339,23 @@ public class SozoBot extends TelegramLongPollingBot {
     }
 
 
-
-    private synchronized  Map<String, String> newMap(String key, String value) {
+    private synchronized Map<String, String> newMap(String key, String value) {
         Map<String, String> map = new HashMap<String, String>(1);
         map.put(key, value);
         return map;
     }
 
 
-    private synchronized  void deleteKeyboardButtonAndSend(String text, String chatId) {
+    private synchronized void deleteKeyboardButtonAndSend(String text, String chatId) {
 
         ReplyKeyboardRemove remove = new ReplyKeyboardRemove(true);
         SendMessage sendMessage = new SendMessage(chatId, text);
         sendMessage.setReplyMarkup(remove);
-        sendMessage.setProtectContent(true);
         sendMessage(sendMessage);
 
     }
 
-    private synchronized  void sendInfo(String chatId) {
+    private synchronized void sendInfo(String chatId) {
         String message = "SOZO - масштабная молодежная христианская конференция Центральной Азии\n" +
                 "\n" +
                 "\uD83D\uDDD3 | 16-19 августа\n" +
@@ -376,7 +373,7 @@ public class SozoBot extends TelegramLongPollingBot {
         sendMessage(message, chatId);
     }
 
-    private  synchronized void sendMasterClass(String chatId) {
+    private synchronized void sendMasterClass(String chatId) {
 
         List<List<String>> list = new ArrayList<>(5);
         list.add(Arrays.asList("Отнашение до брака", "О кофе"));
@@ -391,7 +388,7 @@ public class SozoBot extends TelegramLongPollingBot {
     }
 
 
-    private synchronized  void sendMerch(String chatId) {
+    private synchronized void sendMerch(String chatId) {
 
         List<List<String>> list = new ArrayList<>(5);
         list.add(Arrays.asList("Xudi", "Fudbolka"));
@@ -411,7 +408,7 @@ public class SozoBot extends TelegramLongPollingBot {
         sendMessage(message);
     }
 
-    private  synchronized void sendTimeTable(String chatId) {
+    private synchronized void sendTimeTable(String chatId) {
         String message = "12 ДНЕЙ ДО КОНФЕРЕНЦИИ SOZO \uD83D\uDCA5\n" +
                 "\n" +
                 "Старший пастор церкви «Almaty Church» - Иван Крюков, приглашает лично тебя стать частью того, что Бог делает здесь в Центральной Азии! \n" +
@@ -429,10 +426,11 @@ public class SozoBot extends TelegramLongPollingBot {
     }
 
 
-    private synchronized  Message sendMessage(String text, String chatId) {
+    private synchronized Message sendMessage(String text, String chatId) {
         try {
             SendMessage message = new SendMessage(chatId, text);
             message.enableHtml(true);
+            message.enableMarkdown(true);
             return execute(message);
         } catch (TelegramApiException e) {
             e.printStackTrace();
@@ -441,7 +439,7 @@ public class SozoBot extends TelegramLongPollingBot {
     }
 
 
-    private  synchronized Message sendMessage(SendPhoto photo, String chatId) {
+    private synchronized Message sendMessage(SendPhoto photo, String chatId) {
         try {
             return execute(photo);
         } catch (TelegramApiException e) {
@@ -450,7 +448,7 @@ public class SozoBot extends TelegramLongPollingBot {
         }
     }
 
-    private synchronized  Message sendMessage(SendMessage message) {
+    private synchronized Message sendMessage(SendMessage message) {
         try {
             return execute(message);
         } catch (TelegramApiException e) {
@@ -460,7 +458,7 @@ public class SozoBot extends TelegramLongPollingBot {
     }
 
 
-    private synchronized  Message sendLocation(String chatId, boolean isHome) {
+    private synchronized Message sendLocation(String chatId, boolean isHome) {
         try {
 
             List<List<Map<String, String>>> maps = new ArrayList<>();
@@ -483,7 +481,8 @@ public class SozoBot extends TelegramLongPollingBot {
 
             List<List<InlineKeyboardButton>> inlineButtonBoard = buttonService.createInlineButtonBoard(maps, true);
 
-            InlineKeyboardMarkup markup = new InlineKeyboardMarkup(inlineButtonBoard);
+            InlineKeyboardMarkup markup = new InlineKeyboardMarkup();
+            markup.setKeyboard(inlineButtonBoard);
 
             SendLocation sendLocation = new SendLocation(chatId, 43.337667000000003, 76.953017000000003);
             sendLocation.setReplyMarkup(markup);
@@ -497,7 +496,7 @@ public class SozoBot extends TelegramLongPollingBot {
     }
 
 
-    private synchronized  void sendEditMessage(EditMessageText message) {
+    private synchronized void sendEditMessage(EditMessageText message) {
         try {
             execute(message);
         } catch (TelegramApiException e) {
@@ -506,7 +505,7 @@ public class SozoBot extends TelegramLongPollingBot {
     }
 
 
-    private  synchronized boolean deleteMessage(DeleteMessage message) {
+    private synchronized boolean deleteMessage(DeleteMessage message) {
         try {
             return execute(message);
         } catch (TelegramApiException e) {
@@ -516,7 +515,7 @@ public class SozoBot extends TelegramLongPollingBot {
     }
 
 
-    private synchronized  boolean deleteMessage(String chatId, Message message) {
+    private synchronized boolean deleteMessage(String chatId, Message message) {
         try {
             DeleteMessage deleteMessage = new DeleteMessage(chatId, message.getMessageId());
             return execute(deleteMessage);
@@ -526,8 +525,8 @@ public class SozoBot extends TelegramLongPollingBot {
         }
     }
 
-
-    private synchronized  void initCommands(String chatId) throws TelegramApiException {
+/*
+    private synchronized void initCommands(String chatId) throws TelegramApiException {
         botCommands = (List<BotCommand>) Arrays.asList(
                 new BotCommand(_START_COMMAND, "Restart bot"),
                 new BotCommand(_TIMETABLE, "Jadval"),
@@ -539,7 +538,7 @@ public class SozoBot extends TelegramLongPollingBot {
         );
         BotCommandScopeChat scopeChat = new BotCommandScopeChat(chatId);
         execute(new SetMyCommands(botCommands, scopeChat, "ru"));
-    }
+    }*/
 
 
     private synchronized boolean validateContact(String phone) {
