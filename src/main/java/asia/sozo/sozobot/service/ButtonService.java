@@ -1,15 +1,15 @@
 package asia.sozo.sozobot.service;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
+        import org.springframework.stereotype.Service;
+        import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
+        import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
+        import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+        import java.util.ArrayList;
+        import java.util.List;
+        import java.util.Map;
+        import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
